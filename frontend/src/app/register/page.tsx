@@ -1,9 +1,12 @@
 "use client";
 
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { apiUrl } from "@/lib/api";
 
 export default function RegisterPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
@@ -31,9 +34,10 @@ export default function RegisterPage() {
         throw new Error(detail);
       }
 
-      setMessage("Registration successful. You can now log in.");
+      setMessage("Registration successful. Redirecting to login...");
       setEmail("");
       setPassword("");
+      router.push("/login");
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : "Registration failed");
     } finally {
@@ -42,9 +46,12 @@ export default function RegisterPage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 px-6 py-12">
-      <div className="mx-auto w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
-        <h1 className="text-2xl font-semibold text-slate-900">Register</h1>
+    <main className="min-h-screen bg-[linear-gradient(120deg,#fffaf0_0%,#eef9ff_55%,#f4fff6_100%)] px-6 py-12">
+      <div className="mx-auto w-full max-w-md rounded-3xl border border-white/70 bg-white/90 p-8 shadow-[0_20px_50px_-25px_rgba(15,23,42,0.35)] backdrop-blur">
+        <p className="inline-flex rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-amber-800">
+          Join PricePulse
+        </p>
+        <h1 className="mt-4 text-3xl font-semibold text-slate-900">Register</h1>
         <p className="mt-2 text-sm text-slate-600">Create your PricePulse account.</p>
 
         <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
@@ -80,14 +87,29 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full rounded-lg bg-emerald-600 px-4 py-2 font-medium text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-70"
+            className="w-full rounded-xl bg-slate-900 px-4 py-2.5 font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70"
           >
             {isLoading ? "Registering..." : "Register"}
           </button>
         </form>
 
-        {message ? <p className="mt-4 text-sm text-emerald-700">{message}</p> : null}
-        {error ? <p className="mt-4 text-sm text-red-600">{error}</p> : null}
+        {message ? (
+          <p className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
+            {message}
+          </p>
+        ) : null}
+        {error ? (
+          <p className="mt-4 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+            {error}
+          </p>
+        ) : null}
+
+        <p className="mt-5 text-sm text-slate-600">
+          Already have an account?{" "}
+          <Link href="/login" className="font-medium text-slate-900 hover:text-slate-700">
+            Login
+          </Link>
+        </p>
       </div>
     </main>
   );
