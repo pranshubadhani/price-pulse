@@ -1,0 +1,32 @@
+# OS / Editor
+.DS_Store
+.vscode/
+
+# Environment files
+.env
+.env.*
+backend/.env
+frontend/.env.local
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+backend/logs/
+
+# Node
+node_modules/
+frontend/.next/
+frontend/out/
+frontend/.turbo/
+
+# Build artifacts
+dist/
+build/
+coverage/
+
+# Docker volumes / temp
+*.pid
+*.log
