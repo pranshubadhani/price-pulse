@@ -1,11 +1,13 @@
 'use client';
 
 import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { createProductTracking, getProducts, Product } from '@/lib/api';
 import ProductCard from '@/components/ProductCard';
 import Link from 'next/link';
 
 export default function DashboardPage() {
+  const router = useRouter();
   const [products, setProducts] = useState<Product[]>([]);
   const [productUrl, setProductUrl] = useState('');
   const [targetPrice, setTargetPrice] = useState('');
@@ -21,7 +23,12 @@ export default function DashboardPage() {
       setProducts(data);
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load products');
+      const message = err instanceof Error ? err.message : 'Failed to load products';
+      if (message.includes('Session expired')) {
+        router.push('/login');
+        return;
+      }
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -49,7 +56,12 @@ export default function DashboardPage() {
       setTargetPrice('');
       await loadProducts();
     } catch (submitError) {
-      setError(submitError instanceof Error ? submitError.message : 'Failed to add product');
+      const message = submitError instanceof Error ? submitError.message : 'Failed to add product';
+      if (message.includes('Session expired')) {
+        router.push('/login');
+        return;
+      }
+      setError(message);
     } finally {
       setIsSubmitting(false);
     }
