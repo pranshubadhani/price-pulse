@@ -121,5 +121,4 @@ jobs:
         working-directory: frontend
         run: |
           npx vercel@latest pull --yes --environment=production --token="$VERCEL_TOKEN"
-          npx vercel@latest build --prod --token="$VERCEL_TOKEN"
-          npx vercel@latest deploy --prebuilt --prod --token="$VERCEL_TOKEN"
+          npx vercel@latest deploy --prod --yes --token="$VERCEL_TOKEN"
