@@ -4,10 +4,11 @@ import { useEffect, useState } from 'react';
 import { getProductHistory, PriceHistoryEntry, Product, getProducts } from '@/lib/api';
 import PriceChart from '@/components/PriceChart';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 
 export default function ProductDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const productId = params?.id as string;
 
   const [product, setProduct] = useState<Product | null>(null);
@@ -37,14 +38,19 @@ export default function ProductDetailPage() {
         setHistory(historyData);
         setError(null);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load product details');
+        const message = err instanceof Error ? err.message : 'Failed to load product details';
+        if (message.includes('Session expired')) {
+          router.push('/login');
+          return;
+        }
+        setError(message);
       } finally {
         setLoading(false);
       }
     }
 
     loadData();
-  }, [productId]);
+  }, [productId, router]);
 
   if (loading) {
     return (
