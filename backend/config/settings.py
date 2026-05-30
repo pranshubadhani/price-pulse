@@ -117,6 +117,31 @@ EMAIL_BACKEND = "sendgrid_backend.SendgridBackend" if SENDGRID_API_KEY else "dja
 # LOGGING CONFIGURATION
 # ============================================================================
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
+LOG_TO_FILE = os.getenv("LOG_TO_FILE", "True" if DEBUG else "False").lower() == "true"
+LOG_DIR = BASE_DIR / "logs"
+
+if LOG_TO_FILE:
+    LOG_DIR.mkdir(parents=True, exist_ok=True)
+
+LOGGING_HANDLERS = {
+    "console": {
+        "class": "logging.StreamHandler",
+        "formatter": "verbose",
+    },
+}
+
+if LOG_TO_FILE:
+    LOGGING_HANDLERS["file"] = {
+        "class": "logging.handlers.RotatingFileHandler",
+        "filename": LOG_DIR / "pricepulse.log",
+        "maxBytes": 1024 * 1024 * 10,
+        "backupCount": 10,
+        "formatter": "verbose",
+    }
+
+DEFAULT_LOG_HANDLERS = ["console"]
+if LOG_TO_FILE:
+    DEFAULT_LOG_HANDLERS.append("file")
 
 LOGGING = {
     "version": 1,
@@ -132,37 +157,25 @@ LOGGING = {
             "style": "{",
         },
     },
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-            "formatter": "verbose",
-        },
-        "file": {
-            "class": "logging.handlers.RotatingFileHandler",
-            "filename": BASE_DIR / "logs" / "pricepulse.log",
-            "maxBytes": 1024 * 1024 * 10,  # 10MB
-            "backupCount": 10,
-            "formatter": "verbose",
-        },
-    },
+    "handlers": LOGGING_HANDLERS,
     "loggers": {
         "django": {
-            "handlers": ["console", "file"],
+            "handlers": DEFAULT_LOG_HANDLERS,
             "level": LOG_LEVEL,
             "propagate": False,
         },
         "django.request": {
-            "handlers": ["console", "file"],
+            "handlers": DEFAULT_LOG_HANDLERS,
             "level": "WARNING",
             "propagate": False,
         },
         "api": {
-            "handlers": ["console", "file"],
+            "handlers": DEFAULT_LOG_HANDLERS,
             "level": LOG_LEVEL,
             "propagate": False,
         },
         "accounts": {
-            "handlers": ["console", "file"],
+            "handlers": DEFAULT_LOG_HANDLERS,
             "level": LOG_LEVEL,
             "propagate": False,
         },
