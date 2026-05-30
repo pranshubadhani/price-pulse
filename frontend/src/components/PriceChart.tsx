@@ -15,16 +15,16 @@ function formatDate(date: Date): string {
 export default function PriceChart({ data, loading = false }: PriceChartProps) {
   if (loading) {
     return (
-      <div className="w-full h-80 flex items-center justify-center bg-gray-50 rounded-lg">
-        <p className="text-gray-500">Loading chart...</p>
+      <div className="flex h-80 w-full items-center justify-center rounded-2xl bg-[#f6f4ef]">
+        <p className="text-[#60656b]">Loading chart...</p>
       </div>
     );
   }
 
   if (!data || data.length === 0) {
     return (
-      <div className="w-full h-80 flex items-center justify-center bg-gray-50 rounded-lg">
-        <p className="text-gray-500">No price history available yet</p>
+      <div className="flex h-80 w-full items-center justify-center rounded-2xl bg-[#f6f4ef]">
+        <p className="text-[#60656b]">No price history available yet</p>
       </div>
     );
   }
@@ -39,19 +39,20 @@ export default function PriceChart({ data, loading = false }: PriceChartProps) {
   return (
     <ResponsiveContainer width="100%" height={300}>
       <LineChart data={chartData} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
-        <CartesianGrid strokeDasharray="3 3" />
+        <CartesianGrid strokeDasharray="3 3" stroke="#d8d6ce" />
         <XAxis
           dataKey="timestamp"
-          tick={{ fontSize: 12 }}
+          tick={{ fontSize: 12, fill: '#5a6166' }}
           angle={-45}
           textAnchor="end"
           height={80}
         />
         <YAxis
           label={{ value: 'Price (₹)', angle: -90, position: 'insideLeft' }}
-          tick={{ fontSize: 12 }}
+          tick={{ fontSize: 12, fill: '#5a6166' }}
         />
         <Tooltip
+          contentStyle={{ borderRadius: '12px', border: '1px solid #d8d6ce', background: '#ffffff' }}
           formatter={(value) => `₹${typeof value === 'number' ? value.toFixed(2) : value}`}
           labelFormatter={(label) => `Date: ${label}`}
         />
@@ -59,9 +60,9 @@ export default function PriceChart({ data, loading = false }: PriceChartProps) {
         <Line
           type="monotone"
           dataKey="price"
-          stroke="#0E9F6E"
+          stroke="#7d9b8a"
           dot={false}
-          activeDot={{ r: 6 }}
+          activeDot={{ r: 6, fill: '#c9ff3e' }}
           isAnimationActive={true}
           name="Price"
         />

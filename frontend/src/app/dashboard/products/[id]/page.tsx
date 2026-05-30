@@ -54,20 +54,20 @@ export default function ProductDetailPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_20%_5%,#e6fffa_0%,#f8fafc_35%,#fef9c3_100%)]">
-        <p className="text-slate-500">Loading...</p>
+      <div className="flex min-h-screen items-center justify-center bg-[#f6f4ef]">
+        <p className="text-[#60656b]">Loading...</p>
       </div>
     );
   }
 
   if (error || !product) {
     return (
-      <div className="min-h-screen bg-[radial-gradient(circle_at_20%_5%,#e6fffa_0%,#f8fafc_35%,#fef9c3_100%)]">
+      <div className="min-h-screen bg-[#f6f4ef]">
         <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
-          <Link href="/dashboard" className="mb-4 block text-sky-700 hover:text-sky-800">
+          <Link href="/dashboard" className="mb-4 block text-[#b87355] hover:text-[#a36246]">
             ← Back to Dashboard
           </Link>
-          <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm">
+          <div className="rounded-2xl border border-[#d8d6ce] bg-white p-8 text-center">
             <p className="text-red-600 text-lg">{error || 'Product not found'}</p>
           </div>
         </div>
@@ -89,18 +89,18 @@ export default function ProductDetailPage() {
   const isPositiveChange = parseFloat(priceStats.change as string) <= 0;
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_20%_5%,#e6fffa_0%,#f8fafc_35%,#fef9c3_100%)]">
-      <div className="border-b border-slate-200/80 bg-white/70 backdrop-blur">
+    <div className="min-h-screen bg-[#f6f4ef]">
+      <div className="border-b border-[#d8d6ce] bg-[#f6f4ef]/95 backdrop-blur">
         <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6 lg:px-8">
-          <Link href="/dashboard" className="mb-4 block text-sm text-sky-700 hover:text-sky-800">
+          <Link href="/dashboard" className="mb-4 block text-sm text-[#b87355] hover:text-[#a36246]">
             ← Back to Dashboard
           </Link>
-          <h1 className="text-3xl font-bold text-slate-900">{product.title}</h1>
+          <h1 className="text-3xl font-semibold text-[#171a1d]">{product.title}</h1>
           <a
             href={product.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-2 inline-block text-sm font-medium text-sky-700 hover:text-sky-800"
+            className="mt-2 inline-block text-sm font-medium text-[#b87355] hover:text-[#a36246]"
           >
             View on Site ↗
           </a>
@@ -109,50 +109,50 @@ export default function ProductDetailPage() {
 
       <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-4">
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <div className="text-sm font-medium uppercase tracking-wide text-slate-500">Current Price</div>
-            <div className="mt-2 text-3xl font-bold text-emerald-600">₹{priceStats.current.toFixed(2)}</div>
+          <div className="rounded-2xl border border-[#d8d6ce] bg-white p-6">
+            <div className="text-sm font-medium uppercase tracking-wide text-[#6f756f]">Current Price</div>
+            <div className="mt-2 text-3xl font-semibold text-[#7d9b8a]">₹{priceStats.current.toFixed(2)}</div>
           </div>
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <div className="text-sm font-medium uppercase tracking-wide text-slate-500">Lowest Price</div>
-            <div className="mt-2 text-3xl font-bold text-sky-600">₹{priceStats.min.toFixed(2)}</div>
+          <div className="rounded-2xl border border-[#d8d6ce] bg-white p-6">
+            <div className="text-sm font-medium uppercase tracking-wide text-[#6f756f]">Lowest Price</div>
+            <div className="mt-2 text-3xl font-semibold text-[#7d9b8a]">₹{priceStats.min.toFixed(2)}</div>
           </div>
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <div className="text-sm font-medium uppercase tracking-wide text-slate-500">Highest Price</div>
-            <div className="mt-2 text-3xl font-bold text-amber-600">₹{priceStats.max.toFixed(2)}</div>
+          <div className="rounded-2xl border border-[#d8d6ce] bg-white p-6">
+            <div className="text-sm font-medium uppercase tracking-wide text-[#6f756f]">Highest Price</div>
+            <div className="mt-2 text-3xl font-semibold text-[#b87355]">₹{priceStats.max.toFixed(2)}</div>
           </div>
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <div className="text-sm font-medium uppercase tracking-wide text-slate-500">Price Change</div>
+          <div className="rounded-2xl border border-[#d8d6ce] bg-white p-6">
+            <div className="text-sm font-medium uppercase tracking-wide text-[#6f756f]">Price Change</div>
             <div className={`mt-2 text-3xl font-bold ${isPositiveChange ? 'text-green-600' : 'text-red-600'}`}>
               {isPositiveChange ? '↓' : '↑'} ₹{Math.abs(parseFloat(priceStats.change as string)).toFixed(2)}
             </div>
           </div>
         </div>
 
-        <div className="mb-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="mb-6 text-xl font-semibold text-slate-900">Price History</h2>
+        <div className="mb-8 rounded-2xl border border-[#d8d6ce] bg-white p-6">
+          <h2 className="mb-6 text-xl font-semibold text-[#171a1d]">Price History</h2>
           <PriceChart data={history} loading={loading} />
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="mb-4 text-xl font-semibold text-slate-900">Details</h2>
+        <div className="rounded-2xl border border-[#d8d6ce] bg-white p-6">
+          <h2 className="mb-4 text-xl font-semibold text-[#171a1d]">Details</h2>
           <div className="space-y-3 text-sm">
             <div className="flex justify-between">
-              <span className="text-slate-600">Last Updated:</span>
-              <span className="text-slate-900">
-                {new Date(product.last_checked).toLocaleString('en-IN')}
+              <span className="text-[#5a6166]">Last Updated:</span>
+              <span className="text-[#171a1d]">
+                {product.last_checked ? new Date(product.last_checked).toLocaleString('en-IN') : 'Never'}
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-600">Tracked Since:</span>
-              <span className="text-slate-900">{new Date(product.created_at).toLocaleString('en-IN')}</span>
+              <span className="text-[#5a6166]">Tracked Since:</span>
+              <span className="text-[#171a1d]">{new Date(product.created_at).toLocaleString('en-IN')}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-600">Price History Entries:</span>
-              <span className="text-slate-900">{history.length}</span>
+              <span className="text-[#5a6166]">Price History Entries:</span>
+              <span className="text-[#171a1d]">{history.length}</span>
             </div>
           </div>
         </div>

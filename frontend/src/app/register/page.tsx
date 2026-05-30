@@ -46,17 +46,17 @@ export default function RegisterPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[linear-gradient(120deg,#fffaf0_0%,#eef9ff_55%,#f4fff6_100%)] px-6 py-12">
-      <div className="mx-auto w-full max-w-md rounded-3xl border border-white/70 bg-white/90 p-8 shadow-[0_20px_50px_-25px_rgba(15,23,42,0.35)] backdrop-blur">
-        <p className="inline-flex rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-amber-800">
+    <main className="min-h-screen bg-[#f6f4ef] px-6 py-14">
+      <div className="mx-auto w-full max-w-md rounded-[2rem] border border-[#d8d6ce] bg-white p-8 shadow-[0_30px_60px_-45px_rgba(23,26,29,0.8)]">
+        <p className="inline-flex rounded-full border border-[#d8d6ce] bg-[#f6f4ef] px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-[#b87355]">
           Join PricePulse
         </p>
-        <h1 className="mt-4 text-3xl font-semibold text-slate-900">Register</h1>
-        <p className="mt-2 text-sm text-slate-600">Create your PricePulse account.</p>
+        <h1 className="mt-4 text-3xl font-semibold text-[#171a1d]">Register</h1>
+        <p className="mt-2 text-sm text-[#4c5258]">Create your PricePulse account.</p>
 
         <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700" htmlFor="email">
+            <label className="mb-1 block text-sm font-medium text-[#3f4347]" htmlFor="email">
               Email
             </label>
             <input
@@ -65,12 +65,12 @@ export default function RegisterPage() {
               required
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none ring-emerald-200 transition focus:ring"
+              className="w-full rounded-xl border border-[#cfccc2] px-3 py-2.5 text-[#171a1d] outline-none ring-[#c9ff3e] transition focus:ring"
             />
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700" htmlFor="password">
+            <label className="mb-1 block text-sm font-medium text-[#3f4347]" htmlFor="password">
               Password
             </label>
             <input
@@ -80,16 +80,13 @@ export default function RegisterPage() {
               required
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 outline-none ring-emerald-200 transition focus:ring"
+              className="w-full rounded-xl border border-[#cfccc2] px-3 py-2.5 text-[#171a1d] outline-none ring-[#c9ff3e] transition focus:ring"
             />
           </div>
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full rounded-xl bg-slate-900 px-4 py-2.5 font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70"
-          >
-            {isLoading ? "Registering..." : "Register"}
+          <button type="submit" disabled={isLoading} className="pp-split-pill w-full justify-center">
+            <span className="pp-split-pill-label">{isLoading ? "Registering" : "Register"}</span>
+            <span className="pp-split-pill-dot">→</span>
           </button>
         </form>
 
@@ -104,9 +101,9 @@ export default function RegisterPage() {
           </p>
         ) : null}
 
-        <p className="mt-5 text-sm text-slate-600">
+        <p className="mt-5 text-sm text-[#4c5258]">
           Already have an account?{" "}
-          <Link href="/login" className="font-medium text-slate-900 hover:text-slate-700">
+          <Link href="/login" className="font-medium text-[#b87355] hover:text-[#a36246]">
             Login
           </Link>
         </p>

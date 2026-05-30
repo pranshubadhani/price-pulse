@@ -1,13 +1,16 @@
 const features = [
   {
+    id: "01.",
     title: "Real-time Price Signals",
     description: "Track product URLs and get notified when your target price is reached.",
   },
   {
+    id: "02.",
     title: "Automated Checks",
     description: "Background workers check prices regularly so you never miss a deal.",
   },
   {
+    id: "03.",
     title: "History Dashboard",
     description: "Visualize price movement over time and understand buying trends.",
   },
@@ -15,50 +18,84 @@ const features = [
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_20%_15%,#d9fbe8_0%,#f0f7ff_40%,#fff6dd_100%)] px-6 py-12 text-slate-900">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-12">
-        <section className="rounded-3xl border border-white/70 bg-white/80 p-8 shadow-[0_28px_70px_-40px_rgba(15,23,42,0.55)] backdrop-blur md:p-12">
-          <p className="mb-4 inline-block rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-emerald-700">
-            PricePulse MVP
-          </p>
-          <h1 className="text-4xl font-bold leading-tight md:text-6xl">
-            Buy Smarter With Automated Price Tracking
-          </h1>
-          <p className="mt-5 max-w-2xl text-lg text-slate-700">
-            Save products, set target prices, and get notified instantly when prices drop.
-            Designed for fast decision-making, built for deal hunters.
-          </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <a
-              href="/register"
-              className="rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:translate-y-[-1px] hover:bg-emerald-700"
-            >
-              Create Account
-            </a>
-            <a
-              href="/login"
-              className="rounded-xl border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:translate-y-[-1px] hover:bg-slate-100"
-            >
-              Login
-            </a>
-            <a
-              href="/dashboard"
-              className="rounded-xl border border-slate-900 bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800"
-            >
-              Open Dashboard
-            </a>
-          </div>
-        </section>
+    <main className="min-h-screen bg-[#f6f4ef] text-[#171a1d]">
+      <section className="relative overflow-hidden bg-[#111416] px-6 pb-20 pt-14 text-white">
+        <div className="pointer-events-none absolute -left-24 -top-20 h-80 w-80 rounded-full bg-[radial-gradient(circle_at_30%_30%,#c9ff3e_0%,#7d9b8a_45%,rgba(0,0,0,0)_72%)] opacity-80 blur-2xl" />
+        <div className="pointer-events-none absolute right-[-4rem] top-20 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_50%_50%,#b87355_0%,rgba(184,115,85,0.25)_50%,rgba(0,0,0,0)_72%)] blur-xl" />
+        <div className="pointer-events-none absolute bottom-[-5rem] left-1/3 h-64 w-64 rounded-full bg-[radial-gradient(circle_at_50%_50%,#7d9b8a_0%,rgba(125,155,138,0.28)_48%,rgba(0,0,0,0)_78%)] blur-2xl" />
 
-        <section className="grid gap-4 md:grid-cols-3">
+        <div className="mx-auto grid w-full max-w-6xl gap-12 lg:grid-cols-[1.05fr_0.95fr]">
+          <div className="space-y-7">
+            <p className="inline-flex rounded-full border border-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#c9ff3e]">
+              Next Phase Live
+            </p>
+            <h1 className="max-w-3xl text-4xl font-semibold leading-tight text-white sm:text-5xl lg:text-6xl">
+              Precision price tracking with a calm, high-end control surface.
+            </h1>
+            <p className="max-w-2xl text-base leading-7 text-white/78 sm:text-lg">
+              Capture deals across supported stores, monitor movement, and act faster with a
+              focused interface designed for clarity.
+            </p>
+            <div className="flex flex-wrap items-center gap-3">
+              <a href="/register" className="pp-split-pill">
+                <span className="pp-split-pill-label">Create Account</span>
+                <span className="pp-split-pill-dot">↗</span>
+              </a>
+              <a
+                href="/login"
+                className="inline-flex items-center rounded-full border border-white/25 px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em] text-white transition hover:bg-white/10"
+              >
+                Login
+              </a>
+            </div>
+          </div>
+
+          <div className="rounded-[2rem] border border-white/15 bg-white/5 p-6 backdrop-blur-xl">
+            <p className="text-xs uppercase tracking-[0.2em] text-[#c9ff3e]">Supported Domains</p>
+            <ul className="mt-6 space-y-4 text-sm text-white/86">
+              <li className="flex items-center justify-between border-b border-white/15 pb-3">
+                <span>Amazon</span>
+                <span className="text-[#c9ff3e]">LIVE</span>
+              </li>
+              <li className="flex items-center justify-between border-b border-white/15 pb-3">
+                <span>Flipkart</span>
+                <span className="text-[#c9ff3e]">LIVE</span>
+              </li>
+              <li className="flex items-center justify-between border-b border-white/15 pb-3">
+                <span>Myntra</span>
+                <span className="text-[#c9ff3e]">LIVE</span>
+              </li>
+              <li className="flex items-center justify-between pb-1">
+                <span>Ajio</span>
+                <span className="text-[#c9ff3e]">LIVE</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto w-full max-w-6xl px-6 py-16">
+        <div className="mb-10 flex items-end justify-between gap-4">
+          <h2 className="text-3xl font-semibold text-[#171a1d]">How It Works</h2>
+          <a href="/dashboard" className="pp-split-pill">
+            <span className="pp-split-pill-label">Open Dashboard</span>
+            <span className="pp-split-pill-dot">→</span>
+          </a>
+        </div>
+
+        <section className="space-y-2">
           {features.map((feature) => (
-            <article
+            <details
               key={feature.title}
-              className="rounded-2xl border border-slate-200 bg-white/90 p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+              className="group rounded-2xl border border-[#d8d6ce] bg-white px-5 py-4 transition"
+              open
             >
-              <h2 className="text-xl font-semibold">{feature.title}</h2>
-              <p className="mt-2 text-sm leading-6 text-slate-600">{feature.description}</p>
-            </article>
+              <summary className="flex cursor-pointer list-none items-center gap-4 border-b border-[#d8d6ce] pb-3 text-[#171a1d]">
+                <span className="text-3xl font-semibold leading-none text-[#b9b6ad]">{feature.id}</span>
+                <span className="text-lg font-semibold">{feature.title}</span>
+              </summary>
+              <p className="pt-4 text-sm leading-7 text-[#3f4347]">{feature.description}</p>
+            </details>
           ))}
         </section>
       </div>

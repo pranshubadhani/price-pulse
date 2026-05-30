@@ -88,17 +88,17 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_20%_5%,#e6fffa_0%,#f8fafc_35%,#fef9c3_100%)]">
-      <div className="border-b border-slate-200/70 bg-white/70 backdrop-blur">
+    <div className="min-h-screen bg-[#f6f4ef]">
+      <div className="border-b border-[#d8d6ce] bg-[#f6f4ef]/90 backdrop-blur">
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h1 className="text-3xl font-bold text-slate-900">Dashboard</h1>
-              <p className="mt-1 text-slate-600">Track and monitor your product prices</p>
+              <h1 className="text-3xl font-semibold text-[#171a1d]">Dashboard</h1>
+              <p className="mt-1 text-[#4c5258]">Track and monitor your product prices</p>
             </div>
             <Link
               href="/"
-              className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+              className="rounded-full border border-[#cfcbbf] bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-[#171a1d] transition hover:bg-[#f0eee8]"
             >
               Home
             </Link>
@@ -107,9 +107,9 @@ export default function DashboardPage() {
       </div>
 
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <section className="mb-8 rounded-3xl border border-white/70 bg-white/80 p-6 shadow-[0_20px_45px_-30px_rgba(15,23,42,0.45)] backdrop-blur">
-          <h2 className="text-xl font-semibold text-slate-900">Track a new product</h2>
-          <p className="mt-1 text-sm text-slate-600">
+        <section className="mb-8 rounded-[1.8rem] border border-[#d8d6ce] bg-white p-6 shadow-[0_28px_50px_-42px_rgba(23,26,29,0.8)]">
+          <h2 className="text-xl font-semibold text-[#171a1d]">Track a new product</h2>
+          <p className="mt-1 text-sm text-[#4c5258]">
             Paste a supported product URL and choose your target price.
           </p>
 
@@ -120,7 +120,7 @@ export default function DashboardPage() {
               value={productUrl}
               onChange={(event: ChangeEvent<HTMLInputElement>) => setProductUrl(event.target.value)}
               placeholder="https://www.amazon.in/dp/..."
-              className="md:col-span-4 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm outline-none ring-emerald-200 transition focus:ring"
+              className="md:col-span-4 rounded-xl border border-[#cfccc2] bg-white px-3 py-2.5 text-sm text-[#171a1d] outline-none ring-[#c9ff3e] transition focus:ring"
             />
             <input
               type="number"
@@ -130,12 +130,12 @@ export default function DashboardPage() {
               value={targetPrice}
               onChange={(event: ChangeEvent<HTMLInputElement>) => setTargetPrice(event.target.value)}
               placeholder="Target price"
-              className="md:col-span-1 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm outline-none ring-emerald-200 transition focus:ring"
+              className="md:col-span-1 rounded-xl border border-[#cfccc2] bg-white px-3 py-2.5 text-sm text-[#171a1d] outline-none ring-[#c9ff3e] transition focus:ring"
             />
             <button
               type="submit"
               disabled={isSubmitting}
-              className="md:col-span-1 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-70"
+              className="md:col-span-1 rounded-full bg-[#171a1d] px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.15em] text-[#c9ff3e] transition hover:bg-[#0d0f11] disabled:cursor-not-allowed disabled:opacity-70"
             >
               {isSubmitting ? 'Adding...' : 'Add'}
             </button>
@@ -149,26 +149,26 @@ export default function DashboardPage() {
         </section>
 
         <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3">
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <div className="text-sm font-medium uppercase tracking-wide text-slate-500">Total Products</div>
+          <div className="rounded-2xl border border-[#d8d6ce] bg-white p-6">
+            <div className="text-sm font-medium uppercase tracking-wide text-[#6f756f]">Total Products</div>
             <div className="mt-2 flex items-baseline">
-              <span className="text-3xl font-bold text-slate-900">{stats.totalProducts}</span>
+              <span className="text-3xl font-semibold text-[#171a1d]">{stats.totalProducts}</span>
             </div>
           </div>
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <div className="text-sm font-medium uppercase tracking-wide text-slate-500">Average Price</div>
+          <div className="rounded-2xl border border-[#d8d6ce] bg-white p-6">
+            <div className="text-sm font-medium uppercase tracking-wide text-[#6f756f]">Average Price</div>
             <div className="mt-2 flex items-baseline">
-              <span className="text-3xl font-bold text-slate-900">
+              <span className="text-3xl font-semibold text-[#171a1d]">
                 {stats.avgPrice !== 0 ? `₹${stats.avgPrice}` : 'N/A'}
               </span>
             </div>
           </div>
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <div className="text-sm font-medium uppercase tracking-wide text-slate-500">Last Updated</div>
+          <div className="rounded-2xl border border-[#d8d6ce] bg-white p-6">
+            <div className="text-sm font-medium uppercase tracking-wide text-[#6f756f]">Last Updated</div>
             <div className="mt-2 flex items-baseline">
-              <span className="text-lg font-bold text-slate-900">
+              <span className="text-lg font-semibold text-[#171a1d]">
                 {stats.lastUpdated
                   ? new Date(stats.lastUpdated).toLocaleString('en-IN', {
                       month: 'short',
@@ -190,15 +190,15 @@ export default function DashboardPage() {
 
         {loading ? (
           <div className="flex items-center justify-center py-12">
-            <p className="text-slate-500">Loading products...</p>
+            <p className="text-[#60656b]">Loading products...</p>
           </div>
         ) : products.length === 0 ? (
-          <div className="rounded-2xl border border-slate-200 bg-white p-12 text-center shadow-sm">
-            <p className="mb-2 text-lg font-semibold text-slate-800">No products tracked yet</p>
-            <p className="text-sm text-slate-600">Use the form above to add your first product.</p>
+          <div className="rounded-2xl border border-[#d8d6ce] bg-white p-12 text-center">
+            <p className="mb-2 text-lg font-semibold text-[#171a1d]">No products tracked yet</p>
+            <p className="text-sm text-[#4c5258]">Use the form above to add your first product.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
