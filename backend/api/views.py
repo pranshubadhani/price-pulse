@@ -9,6 +9,7 @@ from rest_framework.views import APIView
 
 from .models import Product, UserTrackedProduct, PriceHistory
 from .serializers import ProductCreateSerializer, TrackedProductSerializer, PriceHistorySerializer
+from .tasks import scrape_single_product
 
 logger = logging.getLogger(__name__)
 
@@ -84,7 +85,7 @@ class ProductListCreateView(APIView):
         serializer = ProductCreateSerializer(data=request.data, context={"request": request})
         serializer.is_valid(raise_exception=True)
 
-        product, _ = Product.objects.get_or_create(
+        product, product_created = Product.objects.get_or_create(
             url=serializer.validated_data["url"],
             defaults={"title": "", "current_price": None, "last_checked": None},
         )
@@ -102,6 +103,10 @@ class ProductListCreateView(APIView):
             tracked_product.target_price = serializer.validated_data["target_price"]
             tracked_product.alert_enabled = True
             tracked_product.save(update_fields=["target_price", "alert_enabled"])
+
+        # Kick off an immediate scrape when the product is brand new
+        if product_created:
+            scrape_single_product.delay(product.id)
 
         response_serializer = TrackedProductSerializer(tracked_product)
         status_code = status.HTTP_201_CREATED if created else status.HTTP_200_OK

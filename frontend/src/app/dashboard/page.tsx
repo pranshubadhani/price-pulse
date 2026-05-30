@@ -78,7 +78,12 @@ export default function DashboardPage() {
           ).toFixed(2)
         : 0,
     lastUpdated: products.length > 0
-      ? new Date(Math.max(...products.map((p: Product) => new Date(p.last_checked).getTime())))
+      ? (() => {
+          const validTimestamps = products
+            .map((p: Product) => (p.last_checked ? new Date(p.last_checked).getTime() : null))
+            .filter((t): t is number => t !== null);
+          return validTimestamps.length > 0 ? new Date(Math.max(...validTimestamps)) : null;
+        })()
       : null,
   };
 

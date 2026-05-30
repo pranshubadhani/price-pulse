@@ -30,6 +30,32 @@ def get_scraper_for_url(url: str):
     return AmazonScraper()
 
 
+@shared_task(bind=True, max_retries=3, default_retry_delay=60)
+def scrape_single_product(self, product_id: int):
+    """Immediately scrape a single product by ID."""
+    try:
+        product = Product.objects.get(pk=product_id)
+        scraper = get_scraper_for_url(product.url)
+        result = scraper.scrape(product.url)
+
+        product.title = result.title or product.title
+        product.current_price = result.price
+        product.last_checked = timezone.now()
+        product.save(update_fields=["title", "current_price", "last_checked"])
+
+        if result.price is not None:
+            PriceHistory.objects.create(product=product, price=result.price)
+
+        logger.info(f"Immediate scrape done for product {product_id}: {result.price}")
+        return {"product_id": product_id, "price": str(result.price)}
+    except Product.DoesNotExist:
+        logger.warning(f"scrape_single_product: product {product_id} not found")
+        return {"error": "not found"}
+    except Exception as exc:
+        logger.error(f"scrape_single_product failed for {product_id}: {exc}")
+        raise self.retry(exc=exc)
+
+
 @shared_task(bind=True, max_retries=3, default_retry_delay=5 * 60)
 def check_product_prices(self):
     try:
