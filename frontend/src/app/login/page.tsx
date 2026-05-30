@@ -1,8 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000/api";
+import { apiUrl } from "@/lib/api";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -18,7 +17,7 @@ export default function LoginPage() {
     setMessage("");
 
     try {
-      const response = await fetch(`${API_BASE}/auth/login`, {
+      const response = await fetch(apiUrl("/auth/login/"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

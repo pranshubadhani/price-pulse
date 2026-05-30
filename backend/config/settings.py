@@ -2,13 +2,30 @@ from pathlib import Path
 import os
 import sys
 from datetime import timedelta
+from urllib.parse import urlparse
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+def _normalize_host(raw_host: str) -> str:
+    candidate = raw_host.strip()
+    if not candidate:
+        return ""
+    if "://" in candidate:
+        parsed = urlparse(candidate)
+        candidate = parsed.netloc or parsed.path
+    candidate = candidate.split("/")[0].strip()
+    return candidate
+
+
+def _env_list(name: str, default: str) -> list[str]:
+    return [value.strip() for value in os.getenv(name, default).split(",") if value.strip()]
 
 SECRET_KEY = os.getenv("SECRET_KEY", "dev-only-secret-key-change-this-to-32-plus-chars")
 DEBUG = os.getenv("DEBUG", "True").lower() == "true"
 IS_TESTING = "test" in sys.argv
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
+ALLOWED_HOSTS = [_normalize_host(host) for host in _env_list("ALLOWED_HOSTS", "*")]
+ALLOWED_HOSTS = [host for host in ALLOWED_HOSTS if host]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -17,6 +34,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "corsheaders",
     "rest_framework",
     "rest_framework_simplejwt",
     "accounts",
@@ -25,6 +43,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -209,7 +228,7 @@ else:
 # ============================================================================
 # CORS SETTINGS
 # ============================================================================
-CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "http://localhost:3000").split(",")
+CORS_ALLOWED_ORIGINS = _env_list("CORS_ALLOWED_ORIGINS", "http://localhost:3000")
 
 # ============================================================================
 # MONITORING & HEALTH CHECKS

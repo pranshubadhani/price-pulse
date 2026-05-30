@@ -1,4 +1,15 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000/api';
+function normalizeApiBaseUrl(rawBase?: string): string {
+  const fallback = 'http://localhost:8000/api';
+  const base = (rawBase || fallback).trim().replace(/\/$/, '');
+  return base.endsWith('/api') ? base : `${base}/api`;
+}
+
+export const API_BASE_URL = normalizeApiBaseUrl(process.env.NEXT_PUBLIC_API_BASE_URL);
+
+export function apiUrl(path: string): string {
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+  return `${API_BASE_URL}${normalizedPath}`;
+}
 
 export interface Product {
   id: number;
@@ -38,7 +49,7 @@ async function apiCall<T>(
   body?: unknown
 ): Promise<T> {
   const token = await getAuthToken();
-  const url = `${API_BASE_URL}${endpoint}`;
+  const url = apiUrl(endpoint);
 
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
