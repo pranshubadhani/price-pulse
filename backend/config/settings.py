@@ -128,6 +128,13 @@ CELERY_TIMEZONE = "UTC"
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60
 
+CELERY_BEAT_SCHEDULE = {
+    "check-product-prices-every-24h": {
+        "task": "api.tasks.check_product_prices",
+        "schedule": float(os.getenv("PRICE_CHECK_INTERVAL_SECONDS", str(24 * 60 * 60))),
+    },
+}
+
 SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY", "")
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "noreply@pricepulse.local")
 EMAIL_BACKEND = "sendgrid_backend.SendgridBackend" if SENDGRID_API_KEY else "django.core.mail.backends.console.EmailBackend"
