@@ -106,7 +106,10 @@ class ProductListCreateView(APIView):
 
         # Kick off an immediate scrape when the product is brand new
         if product_created:
-            scrape_single_product.delay(product.id)
+            try:
+                scrape_single_product.delay(product.id)
+            except Exception as exc:
+                logger.warning(f"Could not enqueue scrape for product {product.id}: {exc}")
 
         response_serializer = TrackedProductSerializer(tracked_product)
         status_code = status.HTTP_201_CREATED if created else status.HTTP_200_OK
