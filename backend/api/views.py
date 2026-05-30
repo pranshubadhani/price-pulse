@@ -1,4 +1,5 @@
 import logging
+import os
 from django.db import transaction
 from django.db import connection
 from django.shortcuts import get_object_or_404
@@ -9,7 +10,7 @@ from rest_framework.views import APIView
 
 from .models import Product, UserTrackedProduct, PriceHistory
 from .serializers import ProductCreateSerializer, TrackedProductSerializer, PriceHistorySerializer
-from .tasks import scrape_single_product
+from .tasks import scrape_single_product, check_product_prices
 
 logger = logging.getLogger(__name__)
 
@@ -114,6 +115,26 @@ class ProductListCreateView(APIView):
         response_serializer = TrackedProductSerializer(tracked_product)
         status_code = status.HTTP_201_CREATED if created else status.HTTP_200_OK
         return Response(response_serializer.data, status=status_code)
+
+
+class CronPriceCheckView(APIView):
+    """Called by GitHub Actions cron — protected by CRON_SECRET header."""
+    authentication_classes = []
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        secret = os.getenv("CRON_SECRET", "")
+        if not secret:
+            return Response({"detail": "Cron not configured."}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        if request.headers.get("X-Cron-Secret") != secret:
+            return Response({"detail": "Forbidden."}, status=status.HTTP_403_FORBIDDEN)
+        try:
+            check_product_prices.delay()
+            return Response({"detail": "Price check enqueued."}, status=status.HTTP_202_ACCEPTED)
+        except Exception as exc:
+            logger.warning(f"Cron could not enqueue price check: {exc}")
+            check_product_prices.apply()
+            return Response({"detail": "Price check completed synchronously."}, status=status.HTTP_200_OK)
 
 
 class ProductHistoryView(APIView):

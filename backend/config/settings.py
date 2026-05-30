@@ -243,6 +243,7 @@ CORS_ALLOWED_ORIGINS = _env_list("CORS_ALLOWED_ORIGINS", "http://localhost:3000"
 HEALTH_CHECK_ENABLED = os.getenv("HEALTH_CHECK_ENABLED", "True").lower() == "true"
 METRICS_ENABLED = os.getenv("METRICS_ENABLED", "True").lower() == "true"
 SENTRY_DSN = os.getenv("SENTRY_DSN", "")
+CRON_SECRET = os.getenv("CRON_SECRET", "")
 
 # ============================================================================
 # URL CONFIGURATION

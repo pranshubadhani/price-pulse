@@ -1,0 +1,26 @@
+name: Cron Price Check
+
+on:
+  schedule:
+    # Runs every 24 hours at midnight UTC
+    - cron: "0 0 * * *"
+  workflow_dispatch: # Allow manual trigger from GitHub UI
+
+jobs:
+  trigger-price-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger price check on backend
+        run: |
+          response=$(curl -fsS -w "\n%{http_code}" -X POST \
+            "${{ secrets.BACKEND_URL }}/api/cron/price-check/" \
+            -H "X-Cron-Secret: ${{ secrets.CRON_SECRET }}" \
+            -H "Content-Type: application/json")
+          body=$(echo "$response" | head -n1)
+          code=$(echo "$response" | tail -n1)
+          echo "Response: $body"
+          echo "Status: $code"
+          if [ "$code" != "200" ] && [ "$code" != "202" ]; then
+            echo "Price check failed with status $code"
+            exit 1
+          fi
