@@ -3,7 +3,7 @@ from django.db import models
 
 
 class Product(models.Model):
-    url = models.URLField(unique=True)
+    url = models.URLField(unique=True, max_length=2048)
     title = models.CharField(max_length=512, blank=True)
     current_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     last_checked = models.DateTimeField(null=True, blank=True)
