@@ -140,13 +140,8 @@ class CronPriceCheckView(APIView):
 
         # Fallback to synchronous execution when broker/worker isn't available.
         try:
-            result = check_product_prices.apply()
-            if result.failed():
-                logger.error(f"Cron synchronous price check failed: {result.result}")
-                return Response(
-                    {"detail": "Price check failed synchronously.", "error": str(result.result)},
-                    status=status.HTTP_503_SERVICE_UNAVAILABLE,
-                )
+            # Run task body directly to avoid Celery backend/broker dependencies in fallback mode.
+            check_product_prices.run()
 
             return Response({"detail": "Price check completed synchronously."}, status=status.HTTP_200_OK)
         except Exception as sync_exc:
