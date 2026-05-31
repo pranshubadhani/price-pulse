@@ -17,6 +17,16 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (!success) return;
+
+    const timeoutId = window.setTimeout(() => {
+      setSuccess(null);
+    }, 4000);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [success]);
+
   async function loadProducts() {
     try {
       setLoading(true);
