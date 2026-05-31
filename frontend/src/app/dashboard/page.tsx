@@ -2,7 +2,7 @@
 
 import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createProductTracking, deleteProductTracking, getProducts, Product } from '@/lib/api';
+import { createProductTracking, deleteProductTracking, getProducts, Product, refreshProductTracking } from '@/lib/api';
 import ProductCard from '@/components/ProductCard';
 import Link from 'next/link';
 
@@ -13,6 +13,7 @@ export default function DashboardPage() {
   const [targetPrice, setTargetPrice] = useState('');
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [refreshingProductId, setRefreshingProductId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
@@ -82,6 +83,27 @@ export default function DashboardPage() {
         return;
       }
       setError(message);
+    }
+  }
+
+  async function handleRefreshProduct(productId: number) {
+    setError(null);
+    setSuccess(null);
+    setRefreshingProductId(productId);
+
+    try {
+      await refreshProductTracking(productId);
+      setSuccess('Product refresh started. Pulling latest values...');
+      await loadProducts();
+    } catch (refreshError) {
+      const message = refreshError instanceof Error ? refreshError.message : 'Failed to refresh product';
+      if (message.includes('Session expired')) {
+        router.push('/auth');
+        return;
+      }
+      setError(message);
+    } finally {
+      setRefreshingProductId(null);
     }
   }
 
@@ -218,7 +240,13 @@ export default function DashboardPage() {
         ) : (
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {products.map((product) => (
-              <ProductCard key={product.id} product={product} onDelete={handleDeleteProduct} />
+              <ProductCard
+                key={product.id}
+                product={product}
+                onDelete={handleDeleteProduct}
+                onRefresh={handleRefreshProduct}
+                isRefreshing={refreshingProductId === product.id}
+              />
             ))}
           </div>
         )}

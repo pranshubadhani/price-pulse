@@ -2,6 +2,7 @@ from decimal import Decimal
 
 from django.urls import reverse
 from django.test import TestCase
+from unittest.mock import patch
 from rest_framework import status
 from rest_framework.test import APIClient
 from rest_framework.test import APITestCase
@@ -88,6 +89,23 @@ class ProductTrackingTests(APITestCase):
         self.assertFalse(UserTrackedProduct.objects.filter(user=self.user, product=product).exists())
         self.assertTrue(Product.objects.filter(id=product.id).exists())
         self.assertTrue(UserTrackedProduct.objects.filter(user=other_user, product=product).exists())
+
+    @patch("api.views.scrape_single_product.delay")
+    def test_refresh_tracked_product_enqueues_scrape(self, mock_delay):
+        product = Product.objects.create(url="https://example.com/refresh", title="")
+        UserTrackedProduct.objects.create(user=self.user, product=product, target_price="100.00")
+
+        response = self.client.post(f"/api/products/{product.id}/refresh/", {}, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
+        mock_delay.assert_called_once_with(product.id)
+
+    def test_refresh_requires_user_tracking_product(self):
+        product = Product.objects.create(url="https://example.com/not-mine", title="")
+
+        response = self.client.post(f"/api/products/{product.id}/refresh/", {}, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
 class PriceHistoryTests(APITestCase):

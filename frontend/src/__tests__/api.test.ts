@@ -163,6 +163,7 @@ describe('API Service', () => {
     it('deletes product tracking successfully', async () => {
       localStorage.setItem('pricepulse_access', mockToken);
       (global.fetch as jest.Mock).mockResolvedValue({
+        status: 204,
         ok: true,
         json: async () => ({}),
       });
@@ -173,6 +174,26 @@ describe('API Service', () => {
         expect.stringContaining('/products/1/'),
         expect.objectContaining({
           method: 'DELETE',
+        })
+      );
+    });
+  });
+
+  describe('refreshProductTracking', () => {
+    it('requests a manual product refresh', async () => {
+      localStorage.setItem('pricepulse_access', mockToken);
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        status: 202,
+        json: async () => ({ detail: 'Product refresh enqueued.' }),
+      });
+
+      await api.refreshProductTracking(1);
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.stringContaining('/products/1/refresh/'),
+        expect.objectContaining({
+          method: 'POST',
         })
       );
     });

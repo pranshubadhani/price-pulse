@@ -175,6 +175,36 @@ class ProductHistoryView(APIView):
 class ProductDetailView(APIView):
     permission_classes = [IsAuthenticated]
 
+    def post(self, request, product_id):
+        tracked_product = get_object_or_404(
+            UserTrackedProduct.objects.select_related("product"),
+            user=request.user,
+            product_id=product_id,
+        )
+        product = tracked_product.product
+
+        try:
+            task = scrape_single_product.delay(product.id)
+            return Response(
+                {
+                    "detail": "Product refresh enqueued.",
+                    "task_id": str(getattr(task, "id", "")),
+                },
+                status=status.HTTP_202_ACCEPTED,
+            )
+        except Exception as enqueue_exc:
+            logger.warning(f"Could not enqueue refresh for product {product.id}: {enqueue_exc}")
+
+        try:
+            scrape_single_product.run(product.id)
+            return Response({"detail": "Product refreshed synchronously."}, status=status.HTTP_200_OK)
+        except Exception as sync_exc:
+            logger.exception(f"Synchronous refresh failed for product {product.id}: {sync_exc}")
+            return Response(
+                {"detail": "Product refresh failed.", "error": str(sync_exc)},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+
     @transaction.atomic
     def delete(self, request, product_id):
         tracked_product = get_object_or_404(

@@ -6,9 +6,11 @@ import Link from 'next/link';
 interface ProductCardProps {
   product: Product;
   onDelete?: (productId: number) => void;
+  onRefresh?: (productId: number) => void;
+  isRefreshing?: boolean;
 }
 
-export default function ProductCard({ product, onDelete }: ProductCardProps) {
+export default function ProductCard({ product, onDelete, onRefresh, isRefreshing = false }: ProductCardProps) {
   const lastCheckedLabel = product.last_checked
     ? new Date(product.last_checked).toLocaleString('en-IN')
     : 'Never';
@@ -19,15 +21,27 @@ export default function ProductCard({ product, onDelete }: ProductCardProps) {
         <h3 className="mb-2 truncate text-lg font-semibold text-[#171a1d]">
           {product.title || 'Untitled Product'}
         </h3>
-        {onDelete ? (
-          <button
-            type="button"
-            onClick={() => onDelete(product.id)}
-            className="rounded-full border border-[#e0beb1] bg-[#fff7f5] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#9d4d32] hover:bg-[#ffece6]"
-          >
-            Delete
-          </button>
-        ) : null}
+        <div className="flex items-center gap-2">
+          {onRefresh ? (
+            <button
+              type="button"
+              onClick={() => onRefresh(product.id)}
+              disabled={isRefreshing}
+              className="rounded-full border border-[#ccd7ce] bg-[#f5faf6] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#2e6a49] hover:bg-[#e8f6eb] disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              {isRefreshing ? 'Refreshing...' : 'Refresh'}
+            </button>
+          ) : null}
+          {onDelete ? (
+            <button
+              type="button"
+              onClick={() => onDelete(product.id)}
+              className="rounded-full border border-[#e0beb1] bg-[#fff7f5] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#9d4d32] hover:bg-[#ffece6]"
+            >
+              Delete
+            </button>
+          ) : null}
+        </div>
       </div>
       <div className="space-y-2">
         <div className="flex items-end justify-between">

@@ -197,6 +197,10 @@ async function apiCall<T>(
     throw new Error(await parseApiError(response));
   }
 
+  if (response.status === 204) {
+    return undefined as T;
+  }
+
   return response.json() as Promise<T>;
 }
 
@@ -232,4 +236,8 @@ export async function updateProductTracking(
 
 export async function deleteProductTracking(productId: number): Promise<void> {
   await apiCall<unknown>(`/products/${productId}/`, 'DELETE');
+}
+
+export async function refreshProductTracking(productId: number): Promise<void> {
+  await apiCall<unknown>(`/products/${productId}/refresh/`, 'POST');
 }
