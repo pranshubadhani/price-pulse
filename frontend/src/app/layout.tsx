@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Manrope, Sora } from "next/font/google";
-import Link from "next/link";
+import SiteNav from "@/components/SiteNav";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -26,28 +26,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${manrope.variable} ${sora.variable}`}>
-        <header className="pp-header-wrap">
-          <nav className="pp-nav-shell">
-            <Link href="/" className="pp-nav-logo">
-              PricePulse
-            </Link>
-            <div className="pp-nav-links">
-              <Link href="/" className="pp-nav-link">
-                Home
-              </Link>
-              <Link href="/dashboard" className="pp-nav-link">
-                Dashboard
-              </Link>
-              <Link href="/login" className="pp-nav-link">
-                Login
-              </Link>
-              <Link href="/register" className="pp-nav-link pp-nav-link-cta">
-                Register
-              </Link>
-            </div>
-          </nav>
-        </header>
-        <main className="pt-28 md:pt-32">{children}</main>
+        <SiteNav />
+        <main className="pt-24 md:pt-28">{children}</main>
       </body>
     </html>
   );

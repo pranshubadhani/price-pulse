@@ -19,38 +19,38 @@ const features = [
 export default function Home() {
   return (
     <main className="min-h-screen bg-[#f6f4ef] text-[#171a1d]">
-      <section className="relative overflow-hidden bg-[#111416] px-6 pb-20 pt-14 text-white">
-        <div className="pointer-events-none absolute -left-24 -top-20 h-80 w-80 rounded-full bg-[radial-gradient(circle_at_30%_30%,#c9ff3e_0%,#7d9b8a_45%,rgba(0,0,0,0)_72%)] opacity-80 blur-2xl" />
-        <div className="pointer-events-none absolute right-[-4rem] top-20 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_50%_50%,#b87355_0%,rgba(184,115,85,0.25)_50%,rgba(0,0,0,0)_72%)] blur-xl" />
-        <div className="pointer-events-none absolute bottom-[-5rem] left-1/3 h-64 w-64 rounded-full bg-[radial-gradient(circle_at_50%_50%,#7d9b8a_0%,rgba(125,155,138,0.28)_48%,rgba(0,0,0,0)_78%)] blur-2xl" />
+      <section className="relative overflow-hidden bg-[#111416] px-4 pb-16 pt-10 text-white sm:px-6 sm:pb-20 sm:pt-14">
+        <div className="pp-hero-orb-a" />
+        <div className="pp-hero-orb-b" />
+        <div className="pp-hero-orb-c" />
 
-        <div className="mx-auto grid w-full max-w-6xl gap-12 lg:grid-cols-[1.05fr_0.95fr]">
+        <div className="mx-auto grid w-full max-w-6xl gap-10 xl:grid-cols-[1.05fr_0.95fr]">
           <div className="space-y-7">
             <p className="inline-flex rounded-full border border-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#c9ff3e]">
               Next Phase Live
             </p>
-            <h1 className="max-w-3xl text-4xl font-semibold leading-tight text-white sm:text-5xl lg:text-6xl">
+            <h1 className="pp-hero-title max-w-3xl text-white">
               Precision price tracking with a calm, high-end control surface.
             </h1>
-            <p className="max-w-2xl text-base leading-7 text-white/78 sm:text-lg">
+            <p className="pp-hero-subtitle max-w-2xl text-white/78">
               Capture deals across supported stores, monitor movement, and act faster with a
               focused interface designed for clarity.
             </p>
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="pp-hero-actions">
               <a href="/register" className="pp-split-pill">
                 <span className="pp-split-pill-label">Create Account</span>
                 <span className="pp-split-pill-dot">↗</span>
               </a>
               <a
                 href="/login"
-                className="inline-flex items-center rounded-full border border-white/25 px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em] text-white transition hover:bg-white/10"
+                className="inline-flex min-h-[2.7rem] w-full items-center justify-center rounded-full border border-white/25 px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em] text-white transition hover:bg-white/10 sm:w-auto"
               >
                 Login
               </a>
             </div>
           </div>
 
-          <div className="rounded-[2rem] border border-white/15 bg-white/5 p-6 backdrop-blur-xl">
+          <div className="rounded-[1.65rem] border border-white/15 bg-white/5 p-5 backdrop-blur-xl sm:rounded-[2rem] sm:p-6">
             <p className="text-xs uppercase tracking-[0.2em] text-[#c9ff3e]">Supported Domains</p>
             <ul className="mt-6 space-y-4 text-sm text-white/86">
               <li className="flex items-center justify-between border-b border-white/15 pb-3">
@@ -74,9 +74,9 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="mx-auto w-full max-w-6xl px-6 py-16">
-        <div className="mb-10 flex items-end justify-between gap-4">
-          <h2 className="text-3xl font-semibold text-[#171a1d]">How It Works</h2>
+      <section className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
+        <div className="mb-8 flex flex-col items-start justify-between gap-4 sm:mb-10 sm:flex-row sm:items-end">
+          <h2 className="text-2xl font-semibold text-[#171a1d] sm:text-3xl">How It Works</h2>
           <a href="/dashboard" className="pp-split-pill">
             <span className="pp-split-pill-label">Open Dashboard</span>
             <span className="pp-split-pill-dot">→</span>
@@ -87,12 +87,12 @@ export default function Home() {
           {features.map((feature) => (
             <details
               key={feature.title}
-              className="group rounded-2xl border border-[#d8d6ce] bg-white px-5 py-4 transition"
+              className="group rounded-2xl border border-[#d8d6ce] bg-white px-4 py-4 transition sm:px-5"
               open
             >
-              <summary className="flex cursor-pointer list-none items-center gap-4 border-b border-[#d8d6ce] pb-3 text-[#171a1d]">
-                <span className="text-3xl font-semibold leading-none text-[#b9b6ad]">{feature.id}</span>
-                <span className="text-lg font-semibold">{feature.title}</span>
+              <summary className="flex cursor-pointer list-none items-center gap-3 border-b border-[#d8d6ce] pb-3 text-[#171a1d] sm:gap-4">
+                <span className="text-2xl font-semibold leading-none text-[#b9b6ad] sm:text-3xl">{feature.id}</span>
+                <span className="text-base font-semibold sm:text-lg">{feature.title}</span>
               </summary>
               <p className="pt-4 text-sm leading-7 text-[#3f4347]">{feature.description}</p>
             </details>
