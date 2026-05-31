@@ -2,7 +2,7 @@ from pathlib import Path
 import os
 import sys
 from datetime import timedelta
-from urllib.parse import urlparse
+from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,6 +20,21 @@ def _normalize_host(raw_host: str) -> str:
 
 def _env_list(name: str, default: str) -> list[str]:
     return [value.strip() for value in os.getenv(name, default).split(",") if value.strip()]
+
+
+def _ensure_rediss_ssl_cert_reqs(url: str) -> str:
+    """Ensure rediss URLs include ssl_cert_reqs for redis-py/kombu compatibility."""
+    if not url.startswith("rediss://"):
+        return url
+
+    parsed = urlparse(url)
+    query = dict(parse_qsl(parsed.query, keep_blank_values=True))
+    if "ssl_cert_reqs" in query:
+        return url
+
+    # Can be overridden in env when stricter validation is desired.
+    query["ssl_cert_reqs"] = os.getenv("CELERY_REDIS_SSL_CERT_REQS", "CERT_NONE")
+    return urlunparse(parsed._replace(query=urlencode(query)))
 
 SECRET_KEY = os.getenv("SECRET_KEY", "dev-only-secret-key-change-this-to-32-plus-chars")
 DEBUG = os.getenv("DEBUG", "True").lower() == "true"
@@ -119,8 +134,8 @@ SIMPLE_JWT = {
     "SIGNING_KEY": os.getenv("JWT_SECRET_KEY", os.getenv("SECRET_KEY", "dev-secret")),
 }
 
-CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://redis:6379/0")
-CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", "redis://redis:6379/0")
+CELERY_BROKER_URL = _ensure_rediss_ssl_cert_reqs(os.getenv("CELERY_BROKER_URL", "redis://redis:6379/0"))
+CELERY_RESULT_BACKEND = _ensure_rediss_ssl_cert_reqs(os.getenv("CELERY_RESULT_BACKEND", "redis://redis:6379/0"))
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
