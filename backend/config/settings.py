@@ -258,6 +258,28 @@ CORS_ALLOWED_ORIGINS = _env_list("CORS_ALLOWED_ORIGINS", "http://localhost:3000"
 HEALTH_CHECK_ENABLED = os.getenv("HEALTH_CHECK_ENABLED", "True").lower() == "true"
 METRICS_ENABLED = os.getenv("METRICS_ENABLED", "True").lower() == "true"
 SENTRY_DSN = os.getenv("SENTRY_DSN", "")
+if SENTRY_DSN and not IS_TESTING:
+    import sentry_sdk
+    from sentry_sdk.integrations.django import DjangoIntegration
+    from sentry_sdk.integrations.celery import CeleryIntegration
+    from sentry_sdk.integrations.logging import LoggingIntegration
+    import logging
+
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        integrations=[
+            DjangoIntegration(),
+            CeleryIntegration(),
+            LoggingIntegration(
+                level=logging.INFO,       # breadcrumbs from INFO+
+                event_level=logging.ERROR,  # send to Sentry on ERROR+
+            ),
+        ],
+        traces_sample_rate=0.2,  # 20% of transactions for performance
+        send_default_pii=False,  # don't send user PII
+        environment=os.getenv("DJANGO_ENV", "production"),
+    )
+
 CRON_SECRET = os.getenv("CRON_SECRET", "")
 
 # ============================================================================
