@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/components/AuthProvider";
@@ -45,7 +46,15 @@ export default function SiteNav() {
       <nav className="pp-nav-shell" aria-label="Primary">
         <div className="pp-nav-top-row">
           <Link href="/" className="pp-nav-logo">
-            PricePulse
+            <Image
+              src="/pricepulse-logo.png"
+              alt="PricePulse logo"
+              width={38}
+              height={38}
+              className="pp-nav-logo-image"
+              priority
+            />
+            <span className="pp-nav-logo-text">PricePulse</span>
           </Link>
 
           <button

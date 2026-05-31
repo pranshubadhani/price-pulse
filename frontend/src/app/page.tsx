@@ -36,18 +36,6 @@ export default function Home() {
               Capture deals across supported stores, monitor movement, and act faster with a
               focused interface designed for clarity.
             </p>
-            <div className="pp-hero-actions">
-              <a href="/register" className="pp-split-pill">
-                <span className="pp-split-pill-label">Create Account</span>
-                <span className="pp-split-pill-dot">↗</span>
-              </a>
-              <a
-                href="/login"
-                className="inline-flex min-h-[2.7rem] w-full items-center justify-center rounded-full border border-white/25 px-5 py-3 text-xs font-semibold uppercase tracking-[0.15em] text-white transition hover:bg-white/10 sm:w-auto"
-              >
-                Login
-              </a>
-            </div>
           </div>
 
           <div className="rounded-[1.65rem] border border-white/15 bg-white/5 p-5 backdrop-blur-xl sm:rounded-[2rem] sm:p-6">

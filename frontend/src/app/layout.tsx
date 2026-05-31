@@ -17,6 +17,11 @@ const sora = Sora({
 export const metadata: Metadata = {
   title: "PricePulse",
   description: "Track product prices and receive alerts on price drops.",
+  icons: {
+    icon: "/pricepulse-logo.png",
+    shortcut: "/pricepulse-logo.png",
+    apple: "/pricepulse-logo.png",
+  },
 };
 
 export default function RootLayout({

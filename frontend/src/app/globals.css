@@ -66,6 +66,9 @@ h4 {
 }
 
 .pp-nav-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
   color: #fff;
   font-size: 0.78rem;
   font-weight: 700;
@@ -73,6 +76,16 @@ h4 {
   padding: 0.55rem 0.95rem;
   text-transform: uppercase;
   text-decoration: none;
+}
+
+.pp-nav-logo-image {
+  height: 2rem;
+  width: 2rem;
+  border-radius: 0.5rem;
+}
+
+.pp-nav-logo-text {
+  display: inline-block;
 }
 
 .pp-nav-toggle {
@@ -235,6 +248,11 @@ h4 {
     padding: 0.5rem 0.72rem;
     font-size: 0.68rem;
     letter-spacing: 0.14em;
+  }
+
+  .pp-nav-logo-image {
+    height: 1.7rem;
+    width: 1.7rem;
   }
 
   .pp-split-pill {
