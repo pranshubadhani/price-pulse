@@ -40,7 +40,7 @@ export default function ProductDetailPage() {
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Failed to load product details';
         if (message.includes('Session expired')) {
-          router.push('/login');
+          router.push('/auth');
           return;
         }
         setError(message);

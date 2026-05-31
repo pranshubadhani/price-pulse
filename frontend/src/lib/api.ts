@@ -5,6 +5,9 @@ function normalizeApiBaseUrl(rawBase?: string): string {
 }
 
 export const API_BASE_URL = normalizeApiBaseUrl(process.env.NEXT_PUBLIC_API_BASE_URL);
+export const ACCESS_TOKEN_KEY = 'pricepulse_access';
+export const REFRESH_TOKEN_KEY = 'pricepulse_refresh';
+export const AUTH_STATE_EVENT = 'pricepulse-auth-changed';
 
 export function apiUrl(path: string): string {
   const normalizedPath = path.startsWith('/') ? path : `/${path}`;
@@ -72,23 +75,46 @@ function normalizeHistoryEntry(entry: PriceHistoryEntryApiResponse): PriceHistor
 
 async function getAccessToken(): Promise<string | null> {
   if (typeof window === 'undefined') return null;
-  return localStorage.getItem('pricepulse_access');
+  return localStorage.getItem(ACCESS_TOKEN_KEY);
 }
 
 async function getRefreshToken(): Promise<string | null> {
   if (typeof window === 'undefined') return null;
-  return localStorage.getItem('pricepulse_refresh');
+  return localStorage.getItem(REFRESH_TOKEN_KEY);
+}
+
+function notifyAuthStateChange(): void {
+  if (typeof window === 'undefined') return;
+  window.dispatchEvent(new Event(AUTH_STATE_EVENT));
 }
 
 function setAccessToken(token: string): void {
   if (typeof window === 'undefined') return;
-  localStorage.setItem('pricepulse_access', token);
+  localStorage.setItem(ACCESS_TOKEN_KEY, token);
+  notifyAuthStateChange();
 }
 
 function clearAuthTokens(): void {
   if (typeof window === 'undefined') return;
-  localStorage.removeItem('pricepulse_access');
-  localStorage.removeItem('pricepulse_refresh');
+  localStorage.removeItem(ACCESS_TOKEN_KEY);
+  localStorage.removeItem(REFRESH_TOKEN_KEY);
+  notifyAuthStateChange();
+}
+
+export function hasAuthTokens(): boolean {
+  if (typeof window === 'undefined') return false;
+  return Boolean(localStorage.getItem(ACCESS_TOKEN_KEY) && localStorage.getItem(REFRESH_TOKEN_KEY));
+}
+
+export function setAuthTokens(access: string, refresh: string): void {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(ACCESS_TOKEN_KEY, access);
+  localStorage.setItem(REFRESH_TOKEN_KEY, refresh);
+  notifyAuthStateChange();
+}
+
+export function logoutUser(): void {
+  clearAuthTokens();
 }
 
 async function parseApiError(response: Response): Promise<string> {

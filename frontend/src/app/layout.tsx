@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Manrope, Sora } from "next/font/google";
+import { AuthProvider } from "@/components/AuthProvider";
 import SiteNav from "@/components/SiteNav";
 import "./globals.css";
 
@@ -26,8 +27,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${manrope.variable} ${sora.variable}`}>
-        <SiteNav />
-        <main className="pt-24 md:pt-28">{children}</main>
+        <AuthProvider>
+          <SiteNav />
+          <main className="pt-24 md:pt-28">{children}</main>
+        </AuthProvider>
       </body>
     </html>
   );

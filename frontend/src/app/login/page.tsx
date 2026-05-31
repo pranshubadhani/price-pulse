@@ -3,10 +3,12 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
+import { useAuth } from "@/components/AuthProvider";
 import { apiUrl } from "@/lib/api";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
@@ -35,8 +37,7 @@ export default function LoginPage() {
       }
 
       const data = await response.json();
-      localStorage.setItem("pricepulse_access", data.access);
-      localStorage.setItem("pricepulse_refresh", data.refresh);
+      login(data.access, data.refresh);
       setMessage("Login successful. Redirecting to your dashboard...");
       router.push("/dashboard");
     } catch (submitError) {

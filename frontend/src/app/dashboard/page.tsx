@@ -25,7 +25,7 @@ export default function DashboardPage() {
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to load products';
       if (message.includes('Session expired')) {
-        router.push('/login');
+        router.push('/auth');
         return;
       }
       setError(message);
@@ -58,7 +58,7 @@ export default function DashboardPage() {
     } catch (submitError) {
       const message = submitError instanceof Error ? submitError.message : 'Failed to add product';
       if (message.includes('Session expired')) {
-        router.push('/login');
+        router.push('/auth');
         return;
       }
       setError(message);

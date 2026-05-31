@@ -1,23 +1,44 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useAuth } from "@/components/AuthProvider";
 
-const links = [
-  { href: "/", label: "Home" },
-  { href: "/dashboard", label: "Dashboard" },
-  { href: "/login", label: "Login" },
-  { href: "/register", label: "Register", cta: true },
-];
+type NavItem = {
+  href: string;
+  label: string;
+  cta?: boolean;
+};
 
 export default function SiteNav() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { isAuthenticated, isReady, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     setIsOpen(false);
   }, [pathname]);
+
+  const loggedOutLinks: NavItem[] = [
+    { href: "/", label: "Home" },
+    { href: "/auth", label: "Get Started", cta: true },
+  ];
+
+  const loggedInLinks: NavItem[] = [
+    { href: "/", label: "Home" },
+    { href: "/dashboard", label: "Dashboard" },
+    { href: "/profile", label: "Profile" },
+  ];
+
+  const links = isAuthenticated ? loggedInLinks : loggedOutLinks;
+
+  const handleLogout = () => {
+    logout();
+    setIsOpen(false);
+    router.push("/");
+  };
 
   return (
     <header className="pp-header-wrap">
@@ -51,6 +72,11 @@ export default function SiteNav() {
               {link.label}
             </Link>
           ))}
+          {isReady && isAuthenticated ? (
+            <button type="button" className="pp-nav-link" onClick={handleLogout}>
+              Logout
+            </button>
+          ) : null}
         </div>
 
         {isOpen ? (
@@ -64,6 +90,15 @@ export default function SiteNav() {
                 {link.label}
               </Link>
             ))}
+            {isReady && isAuthenticated ? (
+              <button
+                type="button"
+                className="pp-nav-mobile-link"
+                onClick={handleLogout}
+              >
+                Logout
+              </button>
+            ) : null}
           </div>
         ) : null}
       </nav>
