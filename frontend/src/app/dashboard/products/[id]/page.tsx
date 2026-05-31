@@ -6,6 +6,15 @@ import PriceChart from '@/components/PriceChart';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 
+type HistoryRange = '1D' | '7D' | '30D' | 'ALL';
+
+const RANGE_OPTIONS: Array<{ label: string; value: HistoryRange; days: number | null }> = [
+  { label: '1D', value: '1D', days: 1 },
+  { label: '7D', value: '7D', days: 7 },
+  { label: '30D', value: '30D', days: 30 },
+  { label: 'All', value: 'ALL', days: null },
+];
+
 export default function ProductDetailPage() {
   const params = useParams();
   const router = useRouter();
@@ -13,6 +22,7 @@ export default function ProductDetailPage() {
 
   const [product, setProduct] = useState<Product | null>(null);
   const [history, setHistory] = useState<PriceHistoryEntry[]>([]);
+  const [range, setRange] = useState<HistoryRange>('ALL');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -75,14 +85,30 @@ export default function ProductDetailPage() {
     );
   }
 
-  // Calculate price statistics
+  const selectedRange = RANGE_OPTIONS.find((option) => option.value === range);
+  const filteredHistory = (() => {
+    if (!selectedRange || selectedRange.days === null) {
+      return history;
+    }
+
+    const threshold = Date.now() - selectedRange.days * 24 * 60 * 60 * 1000;
+    return history.filter((entry) => new Date(entry.timestamp).getTime() >= threshold);
+  })();
+
+  // Calculate price statistics for selected range
   const priceStats = {
     current: product.current_price || 0,
-    min: history.length > 0 ? Math.min(...history.map((h) => h.price)) : product.current_price || 0,
-    max: history.length > 0 ? Math.max(...history.map((h) => h.price)) : product.current_price || 0,
+    min:
+      filteredHistory.length > 0
+        ? Math.min(...filteredHistory.map((h) => h.price))
+        : product.current_price || 0,
+    max:
+      filteredHistory.length > 0
+        ? Math.max(...filteredHistory.map((h) => h.price))
+        : product.current_price || 0,
     change:
-      history.length > 1
-        ? ((product.current_price || 0) - (history[history.length - 1]?.price || 0)).toFixed(2)
+      filteredHistory.length > 1
+        ? ((product.current_price || 0) - (filteredHistory[filteredHistory.length - 1]?.price || 0)).toFixed(2)
         : 0,
   };
 
@@ -133,8 +159,29 @@ export default function ProductDetailPage() {
         </div>
 
         <div className="mb-8 rounded-2xl border border-[#d8d6ce] bg-white p-6">
-          <h2 className="mb-6 text-xl font-semibold text-[#171a1d]">Price History</h2>
-          <PriceChart data={history} loading={loading} />
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-xl font-semibold text-[#171a1d]">Price History</h2>
+            <div className="inline-flex rounded-full border border-[#d8d6ce] bg-[#f6f4ef] p-1">
+              {RANGE_OPTIONS.map((option) => {
+                const isActive = option.value === range;
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => setRange(option.value)}
+                    className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.08em] transition ${
+                      isActive
+                        ? 'bg-[#171a1d] text-[#c9ff3e]'
+                        : 'text-[#5a6166] hover:bg-[#ece9e1]'
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+          <PriceChart data={filteredHistory} loading={loading} />
         </div>
 
         <div className="rounded-2xl border border-[#d8d6ce] bg-white p-6">
@@ -152,6 +199,10 @@ export default function ProductDetailPage() {
             </div>
             <div className="flex justify-between">
               <span className="text-[#5a6166]">Price History Entries:</span>
+              <span className="text-[#171a1d]">{filteredHistory.length} ({range})</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-[#5a6166]">Total Entries:</span>
               <span className="text-[#171a1d]">{history.length}</span>
             </div>
           </div>
