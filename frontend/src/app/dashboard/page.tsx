@@ -2,7 +2,7 @@
 
 import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createProductTracking, getProducts, Product } from '@/lib/api';
+import { createProductTracking, deleteProductTracking, getProducts, Product } from '@/lib/api';
 import ProductCard from '@/components/ProductCard';
 import Link from 'next/link';
 
@@ -64,6 +64,24 @@ export default function DashboardPage() {
       setError(message);
     } finally {
       setIsSubmitting(false);
+    }
+  }
+
+  async function handleDeleteProduct(productId: number) {
+    setError(null);
+    setSuccess(null);
+
+    try {
+      await deleteProductTracking(productId);
+      setSuccess('Product deleted successfully.');
+      await loadProducts();
+    } catch (deleteError) {
+      const message = deleteError instanceof Error ? deleteError.message : 'Failed to delete product';
+      if (message.includes('Session expired')) {
+        router.push('/auth');
+        return;
+      }
+      setError(message);
     }
   }
 
@@ -200,7 +218,7 @@ export default function DashboardPage() {
         ) : (
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard key={product.id} product={product} onDelete={handleDeleteProduct} />
             ))}
           </div>
         )}

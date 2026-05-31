@@ -17,6 +17,17 @@ class ScrapeResult:
 
 class GenericScraper:
     price_pattern = re.compile(r"\d+[\d,]*(?:\.\d{1,2})?")
+    request_headers = {
+        "User-Agent": (
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/126.0.0.0 Safari/537.36"
+        ),
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-IN,en;q=0.9",
+        "Cache-Control": "no-cache",
+        "Pragma": "no-cache",
+    }
 
     def scrape(
         self,
@@ -44,7 +55,7 @@ class GenericScraper:
         if html_fetcher is not None:
             return html_fetcher(url)
 
-        response = requests.get(url, timeout=15)
+        response = requests.get(url, timeout=15, headers=self.request_headers)
         response.raise_for_status()
         return response.text
 
@@ -63,7 +74,10 @@ class GenericScraper:
 
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
-            page = browser.new_page()
+            page = browser.new_page(
+                user_agent=self.request_headers["User-Agent"],
+                locale="en-IN",
+            )
             page.goto(url, wait_until="networkidle", timeout=30000)
             content = page.content()
             browser.close()

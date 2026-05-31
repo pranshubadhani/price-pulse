@@ -92,17 +92,32 @@ def check_product_prices(self):
 
 def send_price_alerts_for_product(product: Product):
     """Send price drop alerts for tracked users."""
+    if product.current_price is None:
+        return
+
     tracked = UserTrackedProduct.objects.filter(
         product=product,
         alert_enabled=True,
     )
 
     for tracked_product in tracked:
-        if product.current_price and product.current_price <= tracked_product.target_price:
-            EmailService.send_price_drop_alert(
-                user_email=tracked_product.user.email,
-                product_title=product.title,
-                product_url=product.url,
-                current_price=str(product.current_price),
-                target_price=str(tracked_product.target_price),
+        if product.current_price <= tracked_product.target_price:
+            should_send = (
+                tracked_product.last_alert_price is None
+                or product.current_price < tracked_product.last_alert_price
             )
+
+            if should_send:
+                EmailService.send_price_drop_alert(
+                    user_email=tracked_product.user.email,
+                    product_title=product.title,
+                    product_url=product.url,
+                    current_price=str(product.current_price),
+                    target_price=str(tracked_product.target_price),
+                )
+                tracked_product.last_alert_price = product.current_price
+                tracked_product.last_alert_sent_at = timezone.now()
+                tracked_product.save(update_fields=["last_alert_price", "last_alert_sent_at"])
+        elif tracked_product.last_alert_price is not None:
+            tracked_product.last_alert_price = None
+            tracked_product.save(update_fields=["last_alert_price"])

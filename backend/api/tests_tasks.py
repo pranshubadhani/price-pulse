@@ -4,8 +4,9 @@ from unittest.mock import MagicMock, patch
 from django.test import TestCase, override_settings
 from django.utils import timezone
 
-from api.models import Product, PriceHistory
-from api.tasks import check_product_prices
+from api.models import Product, PriceHistory, UserTrackedProduct
+from api.tasks import check_product_prices, send_price_alerts_for_product
+from accounts.models import User
 
 
 @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
@@ -99,3 +100,51 @@ class PriceCheckTaskTests(TestCase):
 
         scraper = get_scraper_for_url("https://ajio.com/p/item")
         self.assertIsInstance(scraper, AjioScraper)
+
+    @patch("api.tasks.EmailService.send_price_drop_alert")
+    def test_alert_sent_once_for_same_price_under_target(self, mock_send_alert):
+        user = User.objects.create_user(email="alerts@example.com", password="Apassword123")
+        tracked = UserTrackedProduct.objects.create(
+            user=user,
+            product=self.product,
+            target_price=Decimal("8000.00"),
+            alert_enabled=True,
+        )
+        self.product.title = "Sony Headphones"
+        self.product.current_price = Decimal("7499.00")
+        self.product.save(update_fields=["title", "current_price"])
+
+        send_price_alerts_for_product(self.product)
+        send_price_alerts_for_product(self.product)
+
+        tracked.refresh_from_db()
+        self.assertEqual(mock_send_alert.call_count, 1)
+        self.assertEqual(tracked.last_alert_price, Decimal("7499.00"))
+
+    @patch("api.tasks.EmailService.send_price_drop_alert")
+    def test_alert_retriggers_only_after_price_recovers_then_drops(self, mock_send_alert):
+        user = User.objects.create_user(email="alerts2@example.com", password="Apassword123")
+        tracked = UserTrackedProduct.objects.create(
+            user=user,
+            product=self.product,
+            target_price=Decimal("8000.00"),
+            alert_enabled=True,
+        )
+        self.product.title = "Sony Headphones"
+
+        self.product.current_price = Decimal("7499.00")
+        self.product.save(update_fields=["title", "current_price"])
+        send_price_alerts_for_product(self.product)
+
+        self.product.current_price = Decimal("8200.00")
+        self.product.save(update_fields=["current_price"])
+        send_price_alerts_for_product(self.product)
+
+        tracked.refresh_from_db()
+        self.assertIsNone(tracked.last_alert_price)
+
+        self.product.current_price = Decimal("7900.00")
+        self.product.save(update_fields=["current_price"])
+        send_price_alerts_for_product(self.product)
+
+        self.assertEqual(mock_send_alert.call_count, 2)

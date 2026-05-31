@@ -159,6 +159,25 @@ describe('API Service', () => {
     });
   });
 
+  describe('deleteProductTracking', () => {
+    it('deletes product tracking successfully', async () => {
+      localStorage.setItem('pricepulse_access', mockToken);
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        json: async () => ({}),
+      });
+
+      await api.deleteProductTracking(1);
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.stringContaining('/products/1/'),
+        expect.objectContaining({
+          method: 'DELETE',
+        })
+      );
+    });
+  });
+
   describe('Authentication', () => {
     it('includes auth token in requests when available', async () => {
       localStorage.setItem('pricepulse_access', mockToken);

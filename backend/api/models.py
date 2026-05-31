@@ -18,6 +18,8 @@ class UserTrackedProduct(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="tracked_by_users")
     target_price = models.DecimalField(max_digits=10, decimal_places=2)
     alert_enabled = models.BooleanField(default=True)
+    last_alert_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    last_alert_sent_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         unique_together = ("user", "product")

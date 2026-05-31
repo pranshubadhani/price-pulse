@@ -229,3 +229,7 @@ export async function updateProductTracking(
   });
   return normalizeProduct(product);
 }
+
+export async function deleteProductTracking(productId: number): Promise<void> {
+  await apiCall<unknown>(`/products/${productId}/`, 'DELETE');
+}

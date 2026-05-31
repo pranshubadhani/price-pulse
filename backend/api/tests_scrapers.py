@@ -72,6 +72,39 @@ class FlipkartScraperTests(SimpleTestCase):
         self.assertEqual(result.title, "Apple iPhone 15")
         self.assertEqual(result.price, Decimal("69999"))
 
+    def test_extracts_from_meta_fields(self):
+        html = """
+        <html>
+            <meta property='og:title' content='Casio Watch'>
+            <meta property='product:price:amount' content='2795'>
+        </html>
+        """
+        scraper = FlipkartScraper()
+
+        result = scraper.scrape("https://flipkart.example/p/2", html_fetcher=lambda _: html)
+
+        self.assertEqual(result.title, "Casio Watch")
+        self.assertEqual(result.price, Decimal("2795"))
+
+    def test_extracts_from_json_ld(self):
+        html = """
+        <html>
+            <script type='application/ld+json'>
+            {
+                "@context": "https://schema.org",
+                "name": "Casio Youth Analog Watch",
+                "offers": {"price": "2699"}
+            }
+            </script>
+        </html>
+        """
+        scraper = FlipkartScraper()
+
+        result = scraper.scrape("https://flipkart.example/p/3", html_fetcher=lambda _: html)
+
+        self.assertEqual(result.title, "Casio Youth Analog Watch")
+        self.assertEqual(result.price, Decimal("2699"))
+
 
 class MyntraScraperTests(SimpleTestCase):
     def test_extracts_title_and_price_with_beautifulsoup(self):

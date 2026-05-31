@@ -66,6 +66,29 @@ class ProductTrackingTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
+    def test_delete_tracked_product_removes_user_tracking(self):
+        product = Product.objects.create(url="https://example.com/delete-me", title="")
+        UserTrackedProduct.objects.create(user=self.user, product=product, target_price="100.00")
+
+        response = self.client.delete(f"/api/products/{product.id}/")
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(UserTrackedProduct.objects.filter(user=self.user, product=product).exists())
+        self.assertFalse(Product.objects.filter(id=product.id).exists())
+
+    def test_delete_tracked_product_keeps_product_if_other_users_track_it(self):
+        product = Product.objects.create(url="https://example.com/shared", title="")
+        other_user = User.objects.create_user(email="stilltracking@example.com", password="Apassword123")
+        UserTrackedProduct.objects.create(user=self.user, product=product, target_price="100.00")
+        UserTrackedProduct.objects.create(user=other_user, product=product, target_price="120.00")
+
+        response = self.client.delete(f"/api/products/{product.id}/")
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(UserTrackedProduct.objects.filter(user=self.user, product=product).exists())
+        self.assertTrue(Product.objects.filter(id=product.id).exists())
+        self.assertTrue(UserTrackedProduct.objects.filter(user=other_user, product=product).exists())
+
 
 class PriceHistoryTests(APITestCase):
     def setUp(self):

@@ -170,3 +170,23 @@ class ProductHistoryView(APIView):
         history = PriceHistory.objects.filter(product=product).order_by("-timestamp")
         serializer = PriceHistorySerializer(history, many=True)
         return Response(serializer.data)
+
+
+class ProductDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @transaction.atomic
+    def delete(self, request, product_id):
+        tracked_product = get_object_or_404(
+            UserTrackedProduct.objects.select_related("product"),
+            user=request.user,
+            product_id=product_id,
+        )
+        product = tracked_product.product
+        tracked_product.delete()
+
+        # Keep Product rows only while at least one user still tracks them.
+        if not UserTrackedProduct.objects.filter(product=product).exists():
+            product.delete()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
