@@ -102,12 +102,19 @@ export default function LoginPage() {
           </p>
         ) : null}
 
-        <p className="mt-5 text-sm text-slate-600">
-          New to PricePulse?{" "}
-          <Link href="/register" className="font-medium text-[#b87355] hover:text-[#a36246]">
-            Create an account
-          </Link>
-        </p>
+        <div className="mt-5 space-y-2 text-sm text-slate-600">
+          <p>
+            New to PricePulse?{" "}
+            <Link href="/register" className="font-medium text-[#b87355] hover:text-[#a36246]">
+              Create an account
+            </Link>
+          </p>
+          <p>
+            <Link href="/forgot-password" className="font-medium text-[#b87355] hover:text-[#a36246]">
+              Forgot your password?
+            </Link>
+          </p>
+        </div>
       </div>
     </main>
   );

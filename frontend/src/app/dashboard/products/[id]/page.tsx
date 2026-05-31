@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { getProductHistory, PriceHistoryEntry, Product, getProducts } from '@/lib/api';
 import PriceChart from '@/components/PriceChart';
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 
 type HistoryRange = '1D' | '7D' | '30D' | 'ALL';
 
@@ -18,13 +18,26 @@ const RANGE_OPTIONS: Array<{ label: string; value: HistoryRange; days: number | 
 export default function ProductDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const productId = params?.id as string;
 
   const [product, setProduct] = useState<Product | null>(null);
   const [history, setHistory] = useState<PriceHistoryEntry[]>([]);
-  const [range, setRange] = useState<HistoryRange>('ALL');
+  const [range, setRange] = useState<HistoryRange>(() => {
+    const param = searchParams.get('range') as HistoryRange | null;
+    return param && RANGE_OPTIONS.find((o) => o.value === param) ? param : 'ALL';
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const updateRange = (newRange: HistoryRange) => {
+    setRange(newRange);
+    const params = new URLSearchParams();
+    if (newRange !== 'ALL') {
+      params.set('range', newRange);
+    }
+    router.push(`?${params.toString()}`);
+  };
 
   useEffect(() => {
     async function loadData() {
@@ -168,7 +181,7 @@ export default function ProductDetailPage() {
                   <button
                     key={option.value}
                     type="button"
-                    onClick={() => setRange(option.value)}
+                    onClick={() => updateRange(option.value)}
                     className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.08em] transition ${
                       isActive
                         ? 'bg-[#171a1d] text-[#c9ff3e]'
