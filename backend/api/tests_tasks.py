@@ -5,7 +5,7 @@ from django.test import TestCase, override_settings
 from django.utils import timezone
 
 from api.models import Product, PriceHistory, UserTrackedProduct
-from api.tasks import check_product_prices, send_price_alerts_for_product
+from api.tasks import check_product_prices, scrape_single_product, send_price_alerts_for_product
 from accounts.models import User
 
 
@@ -148,3 +148,37 @@ class PriceCheckTaskTests(TestCase):
         send_price_alerts_for_product(self.product)
 
         self.assertEqual(mock_send_alert.call_count, 2)
+
+    @patch("api.tasks.EmailService.send_price_drop_alert", return_value=False)
+    def test_dedup_marker_not_set_when_email_send_fails(self, mock_send_alert):
+        user = User.objects.create_user(email="alerts3@example.com", password="Apassword123")
+        tracked = UserTrackedProduct.objects.create(
+            user=user,
+            product=self.product,
+            target_price=Decimal("8000.00"),
+            alert_enabled=True,
+        )
+        self.product.title = "Sony Headphones"
+        self.product.current_price = Decimal("7499.00")
+        self.product.save(update_fields=["title", "current_price"])
+
+        send_price_alerts_for_product(self.product)
+
+        tracked.refresh_from_db()
+        self.assertEqual(mock_send_alert.call_count, 1)
+        self.assertIsNone(tracked.last_alert_price)
+        self.assertIsNone(tracked.last_alert_sent_at)
+
+    @patch("api.tasks.send_price_alerts_for_product")
+    @patch("api.tasks.get_scraper_for_url")
+    def test_scrape_single_product_triggers_alerts_when_price_found(self, mock_get_scraper, mock_send_alerts):
+        mock_scraper = MagicMock()
+        mock_scraper.scrape.return_value = MagicMock(
+            title="Casio Watch",
+            price=Decimal("2699.00"),
+        )
+        mock_get_scraper.return_value = mock_scraper
+
+        scrape_single_product(self.product.id)
+
+        mock_send_alerts.assert_called_once()

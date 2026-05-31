@@ -45,6 +45,7 @@ def scrape_single_product(self, product_id: int):
 
         if result.price is not None:
             PriceHistory.objects.create(product=product, price=result.price)
+            send_price_alerts_for_product(product)
 
         logger.info(f"Immediate scrape done for product {product_id}: {result.price}")
         return {"product_id": product_id, "price": str(result.price)}
@@ -108,16 +109,17 @@ def send_price_alerts_for_product(product: Product):
             )
 
             if should_send:
-                EmailService.send_price_drop_alert(
+                was_sent = EmailService.send_price_drop_alert(
                     user_email=tracked_product.user.email,
                     product_title=product.title,
                     product_url=product.url,
                     current_price=str(product.current_price),
                     target_price=str(tracked_product.target_price),
                 )
-                tracked_product.last_alert_price = product.current_price
-                tracked_product.last_alert_sent_at = timezone.now()
-                tracked_product.save(update_fields=["last_alert_price", "last_alert_sent_at"])
+                if was_sent:
+                    tracked_product.last_alert_price = product.current_price
+                    tracked_product.last_alert_sent_at = timezone.now()
+                    tracked_product.save(update_fields=["last_alert_price", "last_alert_sent_at"])
         elif tracked_product.last_alert_price is not None:
             tracked_product.last_alert_price = None
             tracked_product.save(update_fields=["last_alert_price"])
