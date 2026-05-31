@@ -128,13 +128,33 @@ class CronPriceCheckView(APIView):
             return Response({"detail": "Cron not configured."}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
         if request.headers.get("X-Cron-Secret") != secret:
             return Response({"detail": "Forbidden."}, status=status.HTTP_403_FORBIDDEN)
+
         try:
-            check_product_prices.delay()
-            return Response({"detail": "Price check enqueued."}, status=status.HTTP_202_ACCEPTED)
-        except Exception as exc:
-            logger.warning(f"Cron could not enqueue price check: {exc}")
-            check_product_prices.apply()
+            task = check_product_prices.delay()
+            return Response(
+                {"detail": "Price check enqueued.", "task_id": str(getattr(task, "id", ""))},
+                status=status.HTTP_202_ACCEPTED,
+            )
+        except Exception as enqueue_exc:
+            logger.warning(f"Cron could not enqueue price check: {enqueue_exc}")
+
+        # Fallback to synchronous execution when broker/worker isn't available.
+        try:
+            result = check_product_prices.apply()
+            if result.failed():
+                logger.error(f"Cron synchronous price check failed: {result.result}")
+                return Response(
+                    {"detail": "Price check failed synchronously.", "error": str(result.result)},
+                    status=status.HTTP_503_SERVICE_UNAVAILABLE,
+                )
+
             return Response({"detail": "Price check completed synchronously."}, status=status.HTTP_200_OK)
+        except Exception as sync_exc:
+            logger.exception(f"Cron synchronous execution failed: {sync_exc}")
+            return Response(
+                {"detail": "Price check failed.", "error": str(sync_exc)},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
 
 
 class ProductHistoryView(APIView):

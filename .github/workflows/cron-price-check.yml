@@ -12,14 +12,17 @@ jobs:
     steps:
       - name: Trigger price check on backend
         run: |
-          response=$(curl -fsS -w "\n%{http_code}" -X POST \
+          response=$(curl -sS -w "\n%{http_code}" -X POST \
             "${{ secrets.BACKEND_URL }}/api/cron/price-check/" \
             -H "X-Cron-Secret: ${{ secrets.CRON_SECRET }}" \
             -H "Content-Type: application/json")
-          body=$(echo "$response" | head -n1)
+
+          body=$(echo "$response" | sed '$d')
           code=$(echo "$response" | tail -n1)
+
           echo "Response: $body"
           echo "Status: $code"
+
           if [ "$code" != "200" ] && [ "$code" != "202" ]; then
             echo "Price check failed with status $code"
             exit 1
