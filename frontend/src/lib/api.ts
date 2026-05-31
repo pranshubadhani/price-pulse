@@ -16,7 +16,7 @@ export interface Product {
   url: string;
   title: string;
   current_price: number | null;
-  last_checked: string;
+  last_checked: string | null;
   created_at: string;
 }
 
@@ -33,9 +33,41 @@ export interface PriceHistoryEntry {
   timestamp: string;
 }
 
+interface ProductApiResponse extends Omit<Product, 'current_price' | 'last_checked'> {
+  current_price: number | string | null;
+  last_checked: string | null;
+}
+
+interface PriceHistoryEntryApiResponse extends Omit<PriceHistoryEntry, 'price'> {
+  price: number | string;
+}
+
 export interface ApiError {
   detail?: string;
   error?: string;
+}
+
+function parseNumber(value: number | string | null): number | null {
+  if (value === null) return null;
+  if (typeof value === 'number') return Number.isFinite(value) ? value : null;
+
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function normalizeProduct(product: ProductApiResponse): Product {
+  return {
+    ...product,
+    current_price: parseNumber(product.current_price),
+    last_checked: product.last_checked,
+  };
+}
+
+function normalizeHistoryEntry(entry: PriceHistoryEntryApiResponse): PriceHistoryEntry {
+  return {
+    ...entry,
+    price: parseNumber(entry.price) ?? 0,
+  };
 }
 
 async function getAccessToken(): Promise<string | null> {
@@ -143,18 +175,21 @@ async function apiCall<T>(
 }
 
 export async function getProducts(): Promise<Product[]> {
-  return apiCall<Product[]>('/products/');
+  const products = await apiCall<ProductApiResponse[]>('/products/');
+  return products.map(normalizeProduct);
 }
 
 export async function getProductHistory(productId: number): Promise<PriceHistoryEntry[]> {
-  return apiCall<PriceHistoryEntry[]>(`/products/${productId}/history/`);
+  const history = await apiCall<PriceHistoryEntryApiResponse[]>(`/products/${productId}/history/`);
+  return history.map(normalizeHistoryEntry);
 }
 
 export async function createProductTracking(url: string, targetPrice: number): Promise<Product> {
-  return apiCall<Product>('/products/', 'POST', {
+  const product = await apiCall<ProductApiResponse>('/products/', 'POST', {
     url,
     target_price: targetPrice,
   });
+  return normalizeProduct(product);
 }
 
 export async function updateProductTracking(
@@ -162,8 +197,9 @@ export async function updateProductTracking(
   targetPrice: number,
   alertEnabled: boolean
 ): Promise<Product> {
-  return apiCall<Product>(`/products/${productId}/`, 'PUT', {
+  const product = await apiCall<ProductApiResponse>(`/products/${productId}/`, 'PUT', {
     target_price: targetPrice,
     alert_enabled: alertEnabled,
   });
+  return normalizeProduct(product);
 }

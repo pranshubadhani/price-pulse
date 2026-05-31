@@ -52,6 +52,29 @@ describe('API Service', () => {
 
       await expect(api.getProducts()).rejects.toThrow('Not found');
     });
+
+    it('normalizes string decimal prices to numbers', async () => {
+      const mockProducts = [
+        {
+          id: 1,
+          url: 'https://amazon.com/dp/B123456',
+          title: 'Test Product',
+          current_price: '1500.50',
+          last_checked: '2026-05-30T10:00:00Z',
+          created_at: '2026-05-20T10:00:00Z',
+        },
+      ];
+
+      localStorage.setItem('pricepulse_access', mockToken);
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        json: async () => mockProducts,
+      });
+
+      const result = await api.getProducts();
+
+      expect(result[0]?.current_price).toBe(1500.5);
+    });
   });
 
   describe('getProductHistory', () => {
