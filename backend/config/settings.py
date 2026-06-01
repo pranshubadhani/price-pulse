@@ -152,6 +152,7 @@ CELERY_BEAT_SCHEDULE = {
 
 SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY", "")
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "noreply@pricepulse.local")
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
 EMAIL_BACKEND = "sendgrid_backend.SendgridBackend" if SENDGRID_API_KEY else "django.core.mail.backends.console.EmailBackend"
 
 # ============================================================================
