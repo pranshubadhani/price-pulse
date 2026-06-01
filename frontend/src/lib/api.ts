@@ -184,9 +184,10 @@ async function apiCall<T>(
 
   let response = await requestWithToken(url, method, body, token);
 
-  if (response.status === 401 && token) {
-    const refreshed = await refreshAccessToken();
+  if (response.status === 401) {
+    const refreshed = token ? await refreshAccessToken() : null;
     if (!refreshed) {
+      clearAuthTokens();
       throw new Error('Session expired. Please log in again.');
     }
     token = refreshed;

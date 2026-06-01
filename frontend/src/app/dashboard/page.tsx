@@ -27,6 +27,9 @@ export default function DashboardPage() {
     return () => window.clearTimeout(timeoutId);
   }, [success]);
 
+  const isAuthError = (message: string) =>
+    message.includes('Session expired') || message.includes('Authentication credentials were not provided');
+
   async function loadProducts() {
     try {
       setLoading(true);
@@ -35,7 +38,7 @@ export default function DashboardPage() {
       setError(null);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to load products';
-      if (message.includes('Session expired')) {
+      if (isAuthError(message)) {
         router.push('/auth');
         return;
       }
@@ -68,7 +71,7 @@ export default function DashboardPage() {
       await loadProducts();
     } catch (submitError) {
       const message = submitError instanceof Error ? submitError.message : 'Failed to add product';
-      if (message.includes('Session expired')) {
+      if (isAuthError(message)) {
         router.push('/auth');
         return;
       }
@@ -88,7 +91,7 @@ export default function DashboardPage() {
       await loadProducts();
     } catch (deleteError) {
       const message = deleteError instanceof Error ? deleteError.message : 'Failed to delete product';
-      if (message.includes('Session expired')) {
+      if (isAuthError(message)) {
         router.push('/auth');
         return;
       }
@@ -107,7 +110,7 @@ export default function DashboardPage() {
       await loadProducts();
     } catch (refreshError) {
       const message = refreshError instanceof Error ? refreshError.message : 'Failed to refresh product';
-      if (message.includes('Session expired')) {
+      if (isAuthError(message)) {
         router.push('/auth');
         return;
       }

@@ -1,6 +1,9 @@
 import hashlib
 import hmac
 import logging
+from datetime import timedelta
+from urllib.parse import quote
+
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.utils.timezone import now
@@ -18,12 +21,18 @@ from .serializers import RegisterSerializer
 logger = logging.getLogger(__name__)
 
 
-def generate_password_reset_token(email: str) -> str:
+def normalize_password_reset_email(email: str) -> str:
+    return email.strip().lower()
+
+
+def generate_password_reset_token(email: str, date_value=None) -> str:
     """Generate a time-based HMAC token for password reset.
-    Token is valid for 24 hours (changes every day).
+    Token is valid for 24 hours (changes each day).
     """
-    today = now().strftime("%Y-%m-%d")
-    message = f"{email}|{today}".encode()
+    normalized = normalize_password_reset_email(email)
+    date_value = date_value or now()
+    today = date_value.strftime("%Y-%m-%d")
+    message = f"{normalized}|{today}".encode()
     token = hmac.new(
         key=settings.SECRET_KEY.encode(),
         msg=message,
@@ -36,8 +45,13 @@ def verify_password_reset_token(email: str, token: str) -> bool:
     """Verify a password reset token.
     Returns True if token is valid, False if expired or invalid.
     """
-    expected_token = generate_password_reset_token(email)
-    return hmac.compare_digest(token, expected_token)
+    normalized = normalize_password_reset_email(email)
+    for offset in (0, 1):
+        candidate_date = now() - timedelta(days=offset)
+        expected_token = generate_password_reset_token(normalized, candidate_date)
+        if hmac.compare_digest(token, expected_token):
+            return True
+    return False
 
 
 class RegisterView(APIView):
@@ -116,9 +130,11 @@ class ForgotPasswordView(APIView):
             # Generate time-based token
             token = generate_password_reset_token(email)
             
-            # Build reset link
+            # Build reset link with safely encoded query params
             frontend_url = settings.FRONTEND_URL.rstrip('/')
-            reset_link = f"{frontend_url}/reset-password?email={email}&token={token}"
+            encoded_email = quote(email, safe="")
+            encoded_token = quote(token, safe="")
+            reset_link = f"{frontend_url}/reset-password?email={encoded_email}&token={encoded_token}"
             
             subject = "PricePulse Password Reset"
             html_content = f"""<html><body>
